@@ -18,10 +18,10 @@ public class AuthController : ControllerBase
     private BiancasBikesDbContext _dbContext;
     private UserManager<IdentityUser> _userManager;
 
-    public AuthController(BiancasBikesDbContext context, UserManager<IdentityUser> userManager)
+    public AuthController(BiancasBikesDbContext context, UserManager<IdentityUser> userManager) // dependency injection via constructor
     {
-        _dbContext = context;
-        _userManager = userManager;
+        _dbContext = context; // dependency
+        _userManager = userManager; // dependency
     }
 
     [HttpPost("login")]
@@ -94,7 +94,7 @@ public class AuthController : ControllerBase
 
     [HttpGet("Me")]
     [Authorize]
-    public IActionResult Me()
+    public IActionResult Me() // endpoint from AuthController that gets the userProfile for a logged in user
     {
         var identityUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var profile = _dbContext.UserProfiles.SingleOrDefault(up => up.IdentityUserId == identityUserId);

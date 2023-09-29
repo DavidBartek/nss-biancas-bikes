@@ -3,6 +3,8 @@ import Bikes from "./bikes/Bikes";
 import { AuthorizedRoute } from "./auth/AuthorizedRoute";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
+import WorkOrderList from "./workorders/WorkOrderList";
+import CreateWorkOrder from "./workorders/CreateWorkOrder";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -24,14 +26,27 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
             </AuthorizedRoute>
           }
         />
-        <Route
-          path="workorders"
+        {/* Route group: creates 2 routes for workorders. */}
+        {/* Route marked "index": will match to workorders with no extra url segments */}
+        {/* create route: /workorders/create */}
+        <Route path="workorders">
+          <Route
+          index
           element={
-            <AuthorizedRoute loggedInUser={loggedInUser}>
-              <p>Work Orders</p>
-            </AuthorizedRoute>
+              <AuthorizedRoute loggedInUser={loggedInUser}>
+                  <WorkOrderList />
+              </AuthorizedRoute>
           }
-        />
+          />
+          <Route
+          path="create"
+          element={
+              <AuthorizedRoute loggedInUser={loggedInUser}>
+                  <CreateWorkOrder />
+              </AuthorizedRoute>
+          }
+          />
+        </Route>
         <Route
           path="employees"
           element={

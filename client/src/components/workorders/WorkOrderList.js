@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Input, Table } from "reactstrap";
-import { getIncompleteWorkOrders, markCompleteWorkOrder, updateWorkOrder } from "../../managers/workOrderManager";
+import { getIncompleteWorkOrders, markCompleteWorkOrder, removeWorkOrder, updateWorkOrder } from "../../managers/workOrderManager";
 import { Link } from "react-router-dom";
 import { getUserProfiles } from "../../managers/userProfileManager";
 
@@ -21,13 +21,20 @@ export default function WorkOrderList({ loggedInUser }) {
     updateWorkOrder(clone).then(() => {
       getIncompleteWorkOrders().then(setWorkOrders);
     });
-};
+  };
 
   const completeWorkOrder = (workOrderId) => {
     // console.log(`Completed ${workOrderId}`);
     markCompleteWorkOrder(workOrderId).then(() => {
       getIncompleteWorkOrders().then(setWorkOrders);
-    })
+    });
+  };
+
+  const deleteWorkOrder = (workOrderId) => {
+    // console.log(`Deleted ${workOrderId}`);
+    removeWorkOrder(workOrderId).then(() => {
+      getIncompleteWorkOrders().then(setWorkOrders);
+    });
   };
 
   return (
@@ -77,14 +84,21 @@ export default function WorkOrderList({ loggedInUser }) {
                 </Input>
               </td>
               <td>
-              {wo.userProfile && (
+              {wo.userProfile ? (
                   <Button
                   onClick={() => completeWorkOrder(wo.id)}
                   color="success"
                   >
                   Mark as Complete
                   </Button>
-              )}
+                ) : (
+                  <Button
+                  onClick={() => deleteWorkOrder(wo.id)}
+                  color="danger"
+                  >
+                  Delete
+                  </Button>
+                )}
               </td>
             </tr>
           ))}

@@ -29,3 +29,9 @@ export const markCompleteWorkOrder = (workOrderId) => {
     method: "DELETE"
   });
 };
+
+export const removeWorkOrder = (workOrderId) => {
+  return fetch(`${_apiUrl}/${workOrderId}/delete`, {
+    method: "DELETE"
+  });
+};

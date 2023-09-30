@@ -83,4 +83,21 @@ public class WorkOrderController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpDelete("{id}/delete")]
+    [Authorize]
+    public IActionResult DeleteWorkOrder(int id)
+    {
+        WorkOrder workOrderToDelete = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
+        if (workOrderToDelete == null)
+        {
+            return NotFound();
+        }
+
+        _dbContext.WorkOrders.Remove(workOrderToDelete);
+
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
 }

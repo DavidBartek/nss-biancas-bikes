@@ -1,15 +1,34 @@
 import { useEffect, useState } from "react";
-import { Table } from "reactstrap";
-import { getIncompleteWorkOrders } from "../../managers/workOrderManager";
+import { Button, Input, Table } from "reactstrap";
+import { getIncompleteWorkOrders, markCompleteWorkOrder, updateWorkOrder } from "../../managers/workOrderManager";
 import { Link } from "react-router-dom";
+import { getUserProfiles } from "../../managers/userProfileManager";
 
 export default function WorkOrderList({ loggedInUser }) {
   const [workOrders, setWorkOrders] = useState([]);
+  const [mechanics, setMechanics] = useState([]);
 
   useEffect(() => {
     getIncompleteWorkOrders().then(setWorkOrders);
-    // setWorkOrders(testWorkOrders); to test UI with dummy data above
+    // setWorkOrders(testWorkOrders); // to test UI with dummy data below
+    getUserProfiles().then(setMechanics);
   }, []);
+
+  const assignMechanic = (workOrder, mechanicId) => {
+    // console.log(`Assigned ${mechanicId} to ${workOrder.id}`);
+    const clone = structuredClone(workOrder);
+    clone.userProfileId = mechanicId || null;
+    updateWorkOrder(clone).then(() => {
+      getIncompleteWorkOrders().then(setWorkOrders);
+    });
+};
+
+  const completeWorkOrder = (workOrderId) => {
+    // console.log(`Completed ${workOrderId}`);
+    markCompleteWorkOrder(workOrderId).then(() => {
+      getIncompleteWorkOrders().then(setWorkOrders);
+    })
+  };
 
   return (
     <>
@@ -40,7 +59,33 @@ export default function WorkOrderList({ loggedInUser }) {
                   ? `${wo.userProfile.firstName} ${wo.userProfile.lastName}`
                   : "unassigned"}
               </td>
-              <td></td>
+              <td>
+                <Input
+                    type="select"
+                    onChange={(e) => {
+                    assignMechanic(wo, parseInt(e.target.value));
+                    }}
+                    value={wo.userProfileId || 0}
+                >
+                    <option value="0">Choose mechanic</option>
+                    {mechanics.map((m) => (
+                    <option
+                        key={m.id}
+                        value={m.id}
+                    >{`${m.firstName} ${m.lastName}`}</option>
+                    ))}
+                </Input>
+              </td>
+              <td>
+              {wo.userProfile && (
+                  <Button
+                  onClick={() => completeWorkOrder(wo.id)}
+                  color="success"
+                  >
+                  Mark as Complete
+                  </Button>
+              )}
+              </td>
             </tr>
           ))}
         </tbody>
